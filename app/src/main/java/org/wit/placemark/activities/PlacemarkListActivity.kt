@@ -15,7 +15,7 @@ import org.wit.placemark.databinding.ActivityPlacemarkListBinding
 import org.wit.placemark.main.MainApp
 import org.wit.placemark.models.PlacemarkModel
 
-class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
+class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener/*, MultiplePermissionsListener*/ {
 
     lateinit var app: MainApp
     private lateinit var binding: ActivityPlacemarkListBinding
@@ -32,8 +32,8 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
 
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.adapter = PlacemarkAdapter(app.placemarks.findAll(),this)
 
+        loadPlacemarks()
         registerRefreshCallback()
     }
 
@@ -61,6 +61,16 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
     private fun registerRefreshCallback() {
         refreshIntentLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-            { binding.recyclerView.adapter?.notifyDataSetChanged() }
+            { loadPlacemarks() }
     }
+
+    private fun loadPlacemarks() {
+        showPlacemarks(app.placemarks.findAll())
+    }
+
+    fun showPlacemarks (placemarks: List<PlacemarkModel>) {
+        binding.recyclerView.adapter = PlacemarkAdapter(placemarks, this)
+        binding.recyclerView.adapter?.notifyDataSetChanged()
+    }
+
 }
